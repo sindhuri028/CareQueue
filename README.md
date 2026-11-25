@@ -1,21 +1,40 @@
 # CareQueue
 
-CareQueue is a glassmorphic, responsive front-end concept for finding care and exploring an appointment booking flow.
+CareQueue is a responsive, glassmorphic full-stack appointment-scheduling starter. The Node/Express API serves the front end, searches a SQLite-backed sample directory, returns available sample slots, and reserves a slot transactionally with a queue token and reference.
 
 ## Run locally
 
-Open `index.html` in a browser, or serve this folder with any static web server. There are no build tools or package dependencies.
+Requires Node.js 20 or newer.
 
-## Included prototype
+```sh
+npm install
+npm start
+```
 
-- Search/filter sample provider listings by name, location, and department
-- Select a department, date, and sample appointment time
-- Review a simulated confirmation with a demo queue token and reference
-- Local preset chat replies and browser voice input where supported
-- Responsive glass-effect interface and healthcare safety messaging
+Open http://localhost:3000. The SQLite database is created under `./data/` on first run. Set `DATA_DIR` to choose another location. `npm run dev` restarts the server when files change.
 
-## Important: bookings are not real
+## API
 
-This repository is a static front-end prototype. The provider directory, schedules, ratings, available slots, queue tokens, and booking confirmation are illustrative only. The browser does not submit a booking to a hospital, send a confirmation, or persist patient details. Do not enter real patient information. For actual appointments, contact a healthcare provider directly.
+- `GET /api/health` — process health check
+- `GET /api/providers?q=&department=` — search the seeded sample providers
+- `GET /api/providers/:id/slots?department=&date=YYYY-MM-DD` — list currently unreserved sample times
+- `POST /api/bookings` — validate and reserve a sample slot; returns a token and reference
 
-To make this a real booking service, it needs a secure backend and database, verified provider directory, live scheduling/queue integrations or hospital partnerships, identity and consent flows, confirmation delivery, audit logging, and appropriate privacy/security and healthcare compliance review for the countries where it will operate. Never put hospital credentials or private API keys in front-end JavaScript.
+Example request body:
+
+```json
+{
+  "providerId": "northside",
+  "department": "General Medicine",
+  "date": "2026-12-01",
+  "time": "09:00 AM",
+  "patientName": "Alex Sample",
+  "patientPhone": "+1 555 0100"
+}
+```
+
+## Important: not a real healthcare booking service
+
+Provider names, addresses, ratings, departments, schedules, queue positions, and appointments are illustrative sample data. A successful response means a slot was reserved in this app's local SQLite demo database only; **no real hospital receives the booking or sends a confirmation**. Do not enter real patient details or use this system for care. The app does not send SMS/email. It is not medical advice or an emergency service.
+
+Before operating this for real patients, replace the seed directory with verified provider data and integrate each provider's authorized scheduling system; establish identity, consent, authentication and authorization, cancellation/change flows, notification delivery, encrypted storage and transport, retention/deletion policy, audit controls, monitoring/backups, and a security/privacy review for applicable health-data laws. The current prototype has no patient login and does not provide production-grade health-data protections. Do not deploy it for real patient data as-is. Keep provider credentials and secrets on the server, never in browser JavaScript.
